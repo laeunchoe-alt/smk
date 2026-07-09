@@ -1,0 +1,79 @@
+/* 기본 리셋 및 부드러운 연분홍 그라데이션 배경 */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #FFE4E1, #FFB6C1);
+    font-family: 'Malgun Gothic', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 중앙 정렬 핑크 컨테이너 */
+.container {
+    background-color: white;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(219, 112, 147, 0.2);
+    text-align: center;
+    width: 400px;
+}
+
+h2 { color: #DB7093; margin-top: 0; margin-bottom: 20px; }
+p { color: #555; font-size: 14px; line-height: 1.5; }
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #FFC0CB;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+button {
+    width: 96%;
+    padding: 12px;
+    background-color: #FF69B4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+
+button:hover { background-color: #FF1493; }
+
+/* 메인 메뉴 스타일 */
+.menu-list { list-style: none; padding: 0; }
+.menu-item {
+    padding: 15px;
+    margin: 12px 0;
+    background-color: #FFF0F5;
+    border: 1px solid #FFB6C1;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.menu-item.locked {
+    background-color: #EAEAEA;
+    border-color: #CCCCCC;
+}
+.menu-item a { text-decoration: none; color: #DB7093; font-weight: bold; }
+.menu-item.locked a { pointer-events: none; color: #999999; }
+.status { font-size: 13px; font-weight: bold; }
+
+/* 게임용 캔버스 스타일 */
+canvas {
+    background-color: #f7f7f7;
+    border: 2px solid #FFB6C1;
+    border-radius: 10px;
+    display: block;
+    margin: 20px auto;
+}

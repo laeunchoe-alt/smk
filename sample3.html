@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample 3: 여자친구 영역 모의고사</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 4지선다 보기를 깔끔하게 정렬하기 위한 스타일 */
+        .quiz-group {
+            text-align: left;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #FFF0F5;
+            border: 1px solid #FFC0CB;
+            border-radius: 10px;
+        }
+        .quiz-title {
+            font-weight: bold;
+            color: #DB7093;
+            margin-bottom: 10px;
+        }
+        .option-label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 14px;
+            color: #444;
+        }
+        .option-label input {
+            width: auto;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="width: 480px;">
+        <h2>💖 Sample 3: 여자친구 영역 💖</h2>
+        <p>랜덤으로 나오는 3문제를 모두 맞춰야<br>마지막 최종 영상이 해금됩니다!</p>
+        
+        <form onsubmit="checkQuiz(event)">
+            <div id="quizContainer"></div>
+            
+            <button type="submit">정답 확인 및 제출</button>
+        </form>
+        <button onclick="location.href='main.html'" style="background-color: #888; margin-top: 10px;">메인 메뉴로 가기</button>
+    </div>
+
+    <script>
+        // 전체 14문제 데이터베이스 (보내주신 문제와 정답 표 반영)
+        const totalDatabase = [
+            { q: "Q1. 나의 생일과 내가 태어난 시간은 언제일까요?", options: ["3월 18일 오전 9시", "3월 18일 오전 10시", "5월 18일 오전 10시", "5월 18일 오후 10시"], ans: 2 },
+            { q: "Q2. 나의 공식적인 발 사이즈는 몇 mm일까요?", options: ["235mm", "240mm", "245mm", "250mm"], ans: 3 },
+            { q: "Q3. 나의 스마트폰 배경화면은 지금 무슨 사진일까요?", options: ["우리 둘이 같이 찍은 커플 사진", "내가 제일 잘 나온 셀카 사진", "귀여운 고양이/강아지 사진", "아무것도 없음 (기본 배경화면)"], ans: 4 },
+            { q: "Q4. 내가 요즘 가장 신경 쓰여 하거나, 혹은 반대로 가장 좋아하는 내 신체 부위는 어디일까요?", options: ["눈", "코", "입술", "손"], ans: 2 },
+            { q: "Q5. 내가 카페에 가면 10번 중 7번은 시키는 ‘최애 음료’는 무엇일까요?", options: ["아이스 아메리카노", "딸기 스무디", "녹차라떼", "바닐라라떼"], ans: 3 },
+            { q: "Q6. 다음 중 내가 돈 주고 절대 안 사 먹는(싫어하는) 음식은 무엇일까요?", options: ["탕후루", "떡볶이", "닭발", "민트초코"], ans: 1 },
+            { q: "Q7. 치킨을 먹을 때 나의 확고한 취향을 올바르게 짝지은 것은 무엇일까요?", options: ["순살 / 후라이드 / 닭다리 파", "뼈 / 양념 / 닭가슴살 파", "순살 / 양념 / 닭가슴살 파", "뼈 / 후라이드 / 닭다리 파"], ans: 2 },
+            { q: "Q8. 나의 영혼을 채워주는 소울 푸드를 하나만 꼽는다면 무엇일까요?", options: ["삼겹살", "마라탕", "피자", "초밥"], ans: 2 },
+            { q: "Q9. 우리가 처음으로 제대로 말을 섞었거나, 특별한 추억(고백 등)이 시작된 장소는 어디일까요?", options: ["예쁜 카페", "코인노래방", "라멘집", "한강공원"], ans: 3 },
+            { q: "Q10. 우리가 처음으로 같이 본 영화의 제목은 무엇일까요?", options: ["8번 출구", "범죄도시", "엘리멘탈", "서울의 봄"], ans: 1 },
+            { q: "Q11. 내가 너랑 같이 가고 싶다고 노래를 부르거나, 요즘 부쩍 가고 싶어 하는 여행지는 어디일까요?", options: ["유럽", "일본", "제주도", "동남아"], ans: 4 },
+            { q: "Q12. 내가 기분이 진짜 안 좋을 때, 나를 한 방에 사르르 녹여서 풀어줄 수 있는 가장 효과적인 방법은?", options: ["맛있는 음식 사주기", "달콤한 뽀뽀해주기", "혼자만의 시간 주기", "귀여운 애교 부려주기"], ans: 2 },
+            { q: "Q13. 요즘 내가 가장 자주 하는 말버릇이나 자주 쓰는 이모티콘(말)은 무엇일까요?", options: ["힝", "퓨", "아 진짜?", "대박"], ans: 2 },
+            { q: "Q14. 나의 반짝이는 반지 사이즈는 몇 호~몇 호 사이일까요?", options: ["8호 ~ 9호", "10호 ~ 11호", "12호 ~ 13호", "14호 ~ 15호"], ans: 2 }
+        ];
+
+        let selectedQuizzes = [];
+
+        // 14문제 중 랜덤으로 3문제를 선정하여 화면에 그리는 함수
+        function initQuiz() {
+            // 원본 배열 복사 후 랜덤 셔플
+            const shuffled = [...totalDatabase].sort(() => 0.5 - Math.random());
+            // 앞에서 3문제만 선택
+            selectedQuizzes = shuffled.slice(0, 3);
+
+            const container = document.getElementById("quizContainer");
+            container.innerHTML = "";
+
+            selectedQuizzes.forEach((quiz, index) => {
+                const quizBox = document.createElement("div");
+                quizBox.className = "quiz-group";
+
+                // 문제 제목 (화면에는 1번, 2번, 3번으로 보이게 설정)
+                const title = document.createElement("div");
+                title.className = "quiz-title";
+                title.innerText = `${index + 1}번 문항. ${quiz.q.substring(4)}`; // 원래 Q1. 자르고 번호 매김
+                quizBox.appendChild(title);
+
+                // 4지선다 라디오 버튼 생성
+                quiz.options.forEach((opt, optIndex) => {
+                    const label = document.createElement("label");
+                    label.className = "option-label";
+
+                    const radio = document.createElement("input");
+                    radio.type = "radio";
+                    radio.name = `quiz_${index}`;
+                    radio.value = optIndex + 1; // 1, 2, 3, 4번 선택지
+                    radio.required = true;
+
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(` ${optIndex + 1}. ${opt}`));
+                    quizBox.appendChild(label);
+                });
+
+                container.appendChild(quizBox);
+            });
+        }
+
+        // 제출 버튼 클릭 시 채점하는 함수
+        function checkQuiz(event) {
+            event.preventDefault();
+            
+            let allCorrect = true;
+
+            selectedQuizzes.forEach((quiz, index) => {
+                const selected = document.querySelector(`input[name="quiz_${index}"]:checked`);
+                if (!selected || parseInt(selected.value) !== quiz.ans) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                localStorage.setItem("sample4_unlocked", "true");
+                alert("💕 대단해요! 전 문항 백점입니다! 마지막 '내가 찍은 영상(Sample 4)'이 해금되었습니다! 🎉");
+                location.href = "main.html";
+            } else {
+                alert("❌ 틀린 문제가 있습니다! 오답을 고쳐서 다시 제출하거나, 새로고침하여 도전해 보세요.");
+            }
+        }
+
+        // 페이지가 로드되면 즉시 실행
+        initQuiz();
+    </script>
+</body>
+</html>

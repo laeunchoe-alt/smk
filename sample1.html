@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample 1: 스토리 웹툰</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" style="width: 500px;">
+        <h2>Sample 1: 스토리 웹툰</h2>
+        
+        <div style="margin: 20px 0;">
+            <img src="web.png" alt="웹툰 이미지" style="width: 100%; border-radius: 10px; border: 2px solid #FFC0CB;">
+        </div>
+
+        <button onclick="clearSample1()">웹툰을 다 읽었습니다! (게임 해금)</button>
+    </div>
+
+    <script>
+        function clearSample1() {
+            localStorage.setItem("sample2_unlocked", "true");
+            alert("용사 구하기 게임(Sample 2)이 해금되었습니다!");
+            location.href = "main.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 메뉴</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" style="width: 450px;">
+        <h2>🎀 콘텐츠 해금 메뉴</h2>
+        <ul class="menu-list">
+            <li class="menu-item" id="item1">
+                <a href="sample1.html">Sample 1: 스토리 웹툰</a>
+                <span class="status" style="color: #FF1493;">🔓 열림</span>
+            </li>
+            <li class="menu-item locked" id="item2">
+                <a href="sample2.html">Sample 2: 용사 구하기 게임</a>
+                <span class="status" id="status2" style="color: #888;">🔒 1 보기 필요</span>
+            </li>
+            <li class="menu-item locked" id="item3">
+                <a href="sample3.html">Sample 3: 내 퀴즈</a>
+                <span class="status" id="status3" style="color: #888;">🔒 게임 100점 필요</span>
+            </li>
+            <li class="menu-item locked" id="item4">
+                <a href="sample4.html">Sample 4: 내가 찍은 영상</a>
+                <span class="status" id="status4" style="color: #888;">🔒 퀴즈 완료 필요</span>
+            </li>
+        </ul>
+        <button onclick="resetProgress()" style="background-color: #999;">처음부터 다시 하기 (초기화)</button>
+    </div>
+
+    <script>
+        if(sessionStorage.getItem("loggedIn") !== "true") { location.href = "index.html"; }
+
+        function updateMenu() {
+            if(localStorage.getItem("sample2_unlocked") === "true") unlock(2);
+            if(localStorage.getItem("sample3_unlocked") === "true") unlock(3);
+            if(localStorage.getItem("sample4_unlocked") === "true") unlock(4);
+        }
+
+        function unlock(num) {
+            const item = document.getElementById("item" + num);
+            const status = document.getElementById("status" + num);
+            item.classList.remove("locked");
+            status.innerText = "🔓 열림";
+            status.style.color = "#FF1493";
+        }
+
+        function resetProgress() {
+            localStorage.setItem("sample2_unlocked", "false");
+            localStorage.setItem("sample3_unlocked", "false");
+            localStorage.setItem("sample4_unlocked", "false");
+            alert("진행 상황이 리셋되었습니다.");
+            location.reload();
+        }
+
+        updateMenu();
+    </script>
+</body>
+</html>

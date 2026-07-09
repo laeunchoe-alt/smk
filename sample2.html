@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample 2: 용사 구하기 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" style="width: 500px;">
+        <h2>⚔️ 용사 구하기 게임</h2>
+        <p>화면을 클릭하거나 <b>스페이스바</b>를 눌러 점프하세요!<br>장애물을 피해 100점을 넘기면 다음 단계 해금!</p>
+        
+        <h3 id="scoreText" style="color: #DB7093;">현재 점수: 0 / 100</h3>
+        
+        <canvas id="gameCanvas" width="450" height="200"></canvas>
+
+        <button onclick="location.href='main.html'" style="background-color: #888;">메인으로 도망치기</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let score = 0;
+        let isGameOver = false;
+        let hasUnlockedNext = false;
+
+        // 여자기사 (플레이어) 캐릭터 속성
+        const knight = { x: 30, y: 140, width: 30, height: 40, dy: 0, gravity: 0.6, jumpPower: -10, isGrounded: true };
+        // 장애물 (가시)
+        const obstacle = { x: 450, y: 150, width: 20, height: 30, speed: 4 };
+
+        function drawKnight() {
+            // 여자기사 몸체 (핑크)
+            ctx.fillStyle = "#FF69B4";
+            ctx.fillRect(knight.x, knight.y, knight.width, knight.height);
+            // 긴 머리카락 묘사 (뒤쪽 갈색/노란색 레이어)
+            ctx.fillStyle = "#D2691E"; 
+            ctx.fillRect(knight.x - 8, knight.y + 5, 8, knight.height - 5);
+            // 얼굴 눈 표시
+            ctx.fillStyle = "#000";
+            ctx.fillRect(knight.x + 20, knight.y + 8, 4, 4);
+        }
+
+        function drawObstacle() {
+            ctx.fillStyle = "#555555"; // 회색 가시 장애물
+            ctx.beginPath();
+            ctx.moveTo(obstacle.x, obstacle.y + obstacle.height);
+            ctx.lineTo(obstacle.x + obstacle.width/2, obstacle.y);
+            ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + obstacle.height);
+            ctx.fill();
+        }
+
+        function jump() {
+            if (knight.isGrounded && !isGameOver) {
+                knight.dy = knight.jumpPower;
+                knight.isGrounded = false;
+            }
+            if (isGameOver) restartGame();
+        }
+
+        // 입력 감지 (스페이스바 & 터치/클릭)
+        window.addEventListener("keydown", (e) => { if(e.code === "Space") jump(); });
+        canvas.addEventListener("click", jump);
+
+        function update() {
+            if (isGameOver) return;
+
+            // 중력 적용
+            knight.dy += knight.gravity;
+            knight.y += knight.dy;
+
+            if (knight.y >= 140) {
+                knight.y = 140;
+                knight.dy = 0;
+                knight.isGrounded = true;
+            }
+
+            // 장애물 이동
+            obstacle.x -= obstacle.speed;
+            if (obstacle.x + obstacle.width < 0) {
+                obstacle.x = 450;
+                score += 20; // 장애물 하나 피하면 20점 증가
+                obstacle.speed += 0.3; // 점점 빨라짐
+                document.getElementById("scoreText").innerText = "현재 점수: " + score + " / 100";
+                
+                // ★ 핵심: 100점 돌파 시 수학 퀴즈 해금 처리 위치!
+                if (score >= 100 && !hasUnlockedNext) {
+                    hasUnlockedNext = true;
+                    localStorage.setItem("sample3_unlocked", "true");
+                    setTimeout(() => {
+                        alert("축하합니다! 100점 달성으로 내 퀴즈(Sample 3)가 해금되었습니다!");
+                    }, 50);
+                }
+            }
+
+            // 충돌 체크
+            if (knight.x < obstacle.x + obstacle.width &&
+                knight.x + knight.width > obstacle.x &&
+                knight.y < obstacle.y + obstacle.height &&
+                knight.y + knight.height > obstacle.y) {
+                isGameOver = true;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 바닥선
+            ctx.strokeStyle = "#FFB6C1";
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(0, 180); ctx.lineTo(450, 180); ctx.stroke();
+
+            drawKnight();
+            drawObstacle();
+
+            if (isGameOver) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.font = "20px Malgun Gothic";
+                ctx.fillText("게임 오버! 화면을 클릭해 다시 시작", 60, 110);
+            }
+        }
+
+        function restartGame() {
+            score = 0;
+            obstacle.x = 450;
+            obstacle.speed = 4;
+            isGameOver = false;
+            document.getElementById("scoreText").innerText = "현재 점수: " + score + " / 100";
+            loop();
+        }
+
+        function loop() {
+            update();
+            draw();
+            if (!isGameOver) requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>🔒 비밀번호 인증</h2>
+        <p>비밀번호는 4자리,<br>비밀번호 힌트: 연애 시작일</p>
+        <input type="text" id="username" placeholder="아이디">
+        <input type="password" id="password" placeholder="비밀번호">
+        <button onclick="login()">입장하기</button>
+    </div>
+
+    <script>
+        function login() {
+            const pass = document.getElementById('password').value;
+            if(pass === '1117') {
+                sessionStorage.setItem("loggedIn", "true");
+                // 첫 로그인 시 해금 초기 설정
+                if(!localStorage.getItem("sample2_unlocked")) {
+                    localStorage.setItem("sample2_unlocked", "false");
+                    localStorage.setItem("sample3_unlocked", "false");
+                    localStorage.setItem("sample4_unlocked", "false");
+                }
+                location.href = "main.html";
+            } else {
+                alert("비밀번호가 올바르지 않습니다!");
+            }
+        }
+    </script>
+</body>
+</html>
